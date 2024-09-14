@@ -1,11 +1,11 @@
 # SS1-SampleCode-LaborDistribution
 **Author**: Nguyen Trong Hieu, Dam Thanh Thuy, Nguyen Kien, Ngo Minh Duc
-# Contribution
-**Ngo Minh Duc**:       Add attributes
-**Dam Thanh Thuy**:     Add LaborMarketProblem class
-**Nguyen Trong Hieu**:  Add LMPMain class
-**Nguyen Kien**:        Presenter
-# Problem
+### Contribution ###
+- **Ngo Minh Duc**:       Add attributes
+- **Dam Thanh Thuy**:     Add LaborMarketProblem class
+- **Nguyen Trong Hieu**:  Add LMPMain class
+- **Nguyen Kien**:        Presenter
+### Problem ###
 
 **Description:**
 You are tasked with matching a group of employees with a group of companies. Each side has a list of preferences, and the goal is to find a stable matching that ensures no one would prefer to be paired with someone else over their current match.
