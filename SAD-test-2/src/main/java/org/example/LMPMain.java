@@ -55,7 +55,7 @@ public class LMPMain {
                 for (Solution solution : result){
                         System.out.println("------------------------------------------------");
                         System.out.println("Maximize salary   company  -> employee: " + df.format(-solution.getObjective(0)) + " USD");
-                        System.out.println("Minimize distance employee -> company : " + df.format(-solution.getObjective(1)) + " km");
+                        System.out.println("Minimize distance employee -> company : " + df.format(solution.getObjective(1)) + " km");
                         System.out.println("Maximine skill    employee -> company : " + df.format(-solution.getObjective(2)) + " [0-1]");
                         System.out.println("------------------------------------------------");
         }
