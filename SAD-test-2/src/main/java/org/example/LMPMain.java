@@ -42,7 +42,7 @@ public class LMPMain {
 
                 NondominatedPopulation result = new Executor()
                         .withProblemClass(LaborMarketProblem.class,numEmployee, numCompany, salary, distant, skill)
-                        .withAlgorithm("PESA2")
+                        .withAlgorithm("NSGAIII")
                         .withMaxEvaluations(10000)
                         .run();
 
