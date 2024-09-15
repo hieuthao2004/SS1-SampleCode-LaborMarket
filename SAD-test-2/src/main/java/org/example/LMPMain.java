@@ -47,15 +47,7 @@ public class LMPMain {
         for (Solution solution : result) {
             int[] employeeChoice = (int[]) solution.getAttribute("employeeChoice");
 
-<<<<<<< HEAD
             double totalSalaryAcquired = -solution.getObjective(0);  // Lấy giá trị mục tiêu và làm cho nó dương
-=======
-                NondominatedPopulation result = new Executor()
-                        .withProblemClass(LaborMarketProblem.class,numEmployee, numCompany, salary, distant, skill)
-                        .withAlgorithm("PESA2")
-                        .withMaxEvaluations(10000)
-                        .run();
->>>>>>> 0187547f2feca02fa7b2e76ad1c42cb4344b7de1
 
             System.out.println("=================================================");
             System.out.println("Summary of Results:");
