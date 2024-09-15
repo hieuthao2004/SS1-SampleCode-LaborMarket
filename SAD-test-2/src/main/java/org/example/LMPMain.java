@@ -48,10 +48,6 @@ public class LMPMain {
 
                 // output :
 
-                // solution.setObjective(0, -totalSalary); // tối đa hóa mức lương (tối đa hóa -> giảm thiểu giá trị âm)
-                // solution.setObjective(1, totalDistance); // Giảm thiểu khoảng cách
-                // solution.setObjective(2, -totalSkill); // tối đa hóa kỹ năng (tối đa hóa -> giảm thiểu giá trị âm)
-
                 for (Solution solution : result){
                         System.out.println("------------------------------------------------");
                         System.out.println("Maximize salary   company  -> employee: " + df.format(-solution.getObjective(0)) + " USD");
