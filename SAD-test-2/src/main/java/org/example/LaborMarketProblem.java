@@ -8,35 +8,47 @@ import java.util.Arrays;
 
 public class LaborMarketProblem extends AbstractProblem {
 
-    private final int numEmployee;   // số nhân viên
-    private final int numCompany;   // số công ty
-    private final double[][] salary;   // mảng chứa tiền lương cho mỗi nhân viên ứng với mỗi công ty
+    private final int numEmployee;
+    private final int numCompany;
+    private final double[][] salary;
+    private final double[][] distance;  // Khoảng cách từ nhân viên đến công ty
+    private final double[][] skill;     // Kỹ năng giữa nhân viên và công ty
 
-    private final int maxEmployeeRequired = 2;  // mỗi công ty chỉ tuyển 2 nhân viên
-    private final int maxApplyforEmployee = 1;  // mỗi nhân viên chỉ có thể apply vào 1 công ty
+    private final int maxEmployeeRequired = 2;  
+    private final int maxApplyforEmployee = 1;
 
-    public LaborMarketProblem(int numEmployee, int numCompany, double[][] salary) {
+    public LaborMarketProblem(int numEmployee, int numCompany, double[][] salary, double[][] distance, double[][] skill) {
         super(1, 1, 2);
         this.numEmployee = numEmployee;
         this.numCompany = numCompany;
         this.salary = salary;
+        this.distance = distance;
+        this.skill = skill;
     }
 
     @Override
     public void evaluate(Solution solution) {
 
-        BinaryVariable employeeChosen = (BinaryVariable) solution.getVariable(0); // khỏi tạo population initialization
+        BinaryVariable employeeChosen = (BinaryVariable) solution.getVariable(0);
         double totalSalaryAcquired = 0;
 
-        int[] validConstraintCompany = new int[numCompany];  // ràng buộc của công ty (mỗi công ty chỉ tuyển 2 nhân viên)
-        int[] validConstraintEmployee = new int[numEmployee];   // ràng buộc của nhân viên ( mỗi nhân viên chỉ có thể vào 1 công ty)
-        int[] employeeChoice = new int[numEmployee];  // mảng chứa lựa chọn công ty mà nhân viên ứng tuyển
-
+        int[] validConstraintCompany = new int[numCompany];
+        int[] validConstraintEmployee = new int[numEmployee];
+        int[] employeeChoice = new int[numEmployee];
 
         Arrays.fill(validConstraintCompany, 0);
         Arrays.fill(validConstraintEmployee, 0);
         Arrays.fill(employeeChoice, -1);
-        // Check employee choices and assign them
+
+        // Mảng lưu độ hài lòng của từng cặp nhân viên - công ty
+        double[][] employeeCompanySatisfaction = new double[numEmployee][numCompany];
+
+        // Ngưỡng lương tối thiểu để nhân viên cảm thấy hài lòng
+        double salaryThreshold = 5000.0;
+        double maxDistance = 100;  // Giả định khoảng cách tối đa để nhân viên cảm thấy hài lòng
+        double skillThreshold = 0.5; // Ngưỡng kỹ năng tối thiểu để nhân viên cảm thấy hài lòng
+
+        // Tính độ hài lòng và tiền lương
         for (int i = 0; i < numEmployee; i++) {
             for (int j = 0; j < numCompany; j++) {
                 int position = i * numCompany + j;
@@ -44,14 +56,24 @@ public class LaborMarketProblem extends AbstractProblem {
                     validConstraintCompany[j]++;
                     validConstraintEmployee[i]++;
                     totalSalaryAcquired += salary[i][j];
-                    employeeChoice[i] = j ;
+                    employeeChoice[i] = j;
+
+                    // Tính toán độ hài lòng dựa trên lương, khoảng cách và kỹ năng
+                    double salarySatisfaction = (salary[i][j] >= salaryThreshold) ? (salary[i][j] / 1000.0) : (salary[i][j] - salaryThreshold) / 1000.0;
+                    double distanceSatisfaction = (distance[i][j] <= maxDistance) ? (maxDistance - distance[i][j]) / 10.0 : -distance[i][j] / 10.0;
+                    double skillSatisfaction = (skill[i][j] >= skillThreshold) ? skill[i][j] * 10.0 : (skill[i][j] - skillThreshold) * 10.0;
+
+                    // Tổng độ hài lòng của nhân viên dựa trên 3 yếu tố
+                    employeeCompanySatisfaction[i][j] = salarySatisfaction + distanceSatisfaction + skillSatisfaction;
+                } else {
+                    employeeCompanySatisfaction[i][j] = 0.0;  // Không có hài lòng nếu không chọn công ty
                 }
             }
         }
 
         // Constraints
-        int notSatisfiedForCompany = 0;  // kiểm tra có thỏa mãn ràng buộc của công ty
-        int notSatisfiedForEmployee = 0;  // kiểm tra có thỏa mãn ràng buộc của nhân viên
+        int notSatisfiedForCompany = 0;
+        int notSatisfiedForEmployee = 0;
 
         for (int i : validConstraintCompany) {
             if (i > maxEmployeeRequired) notSatisfiedForCompany++;
@@ -60,18 +82,24 @@ public class LaborMarketProblem extends AbstractProblem {
             if (i > maxApplyforEmployee) notSatisfiedForEmployee++;
         }
 
+        // Đặt ràng buộc
         solution.setConstraint(0, -notSatisfiedForCompany);
         solution.setConstraint(1, -notSatisfiedForEmployee);
 
-        solution.setObjective(0, -totalSalaryAcquired); // tối ưu tổng tiền lương đạt được
+        // Đặt mục tiêu tối ưu hóa
+        solution.setObjective(0, -totalSalaryAcquired);
+
+        // Lưu lựa chọn công ty của nhân viên
         solution.setAttribute("employeeChoice", employeeChoice);
+
+        // Lưu độ hài lòng của từng cặp nhân viên - công ty
+        solution.setAttribute("employeeCompanySatisfaction", employeeCompanySatisfaction);
     }
 
     @Override
     public Solution newSolution() {
         Solution solution = new Solution(this.numberOfVariables, this.numberOfObjectives, this.numberOfConstraints);
-        solution.setVariable(0, new BinaryVariable(numEmployee * numCompany)); // population initialization, tạo ra mảng binary với chiều dài 10 phần tử
-        return solution;                                                                         // quyết định có hay không vào công ty nào trong số 10 công ty
-
+        solution.setVariable(0, new BinaryVariable(numEmployee * numCompany));  
+        return solution;
     }
 }
