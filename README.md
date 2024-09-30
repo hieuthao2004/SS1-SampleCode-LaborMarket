@@ -35,4 +35,26 @@ Nguyên lý ghép cặp **triplet stable matching** trong bài toán này mở r
 - Một người A có thể thích ghép với người B1, nhưng nếu B1 đang ghép với người A2 và thích A2 hơn, thì A sẽ phải thử chọn một người khác trong nhóm B.
 - Quá trình tiếp diễn cho đến khi không ai muốn đổi ghép cặp nữa, và kết quả là một bộ ba (A, B, C) được ghép sao cho không ai có thể cải thiện tình hình của mình bằng cách đổi ghép.
 
-Nguyên lý này được áp dụng vào thuật toán tối ưu đa mục tiêu NSGA-II để tìm ra các ghép cặp ổn định và cân bằng nhất, dựa trên hàm mục tiêu và đánh giá sự hài lòng.
+
+
+### 1. **Biểu diễn dữ liệu kiểu hoán vị (Permutation-based Representation)**
+   - **Cách biểu diễn chính** mà bạn sử dụng là kiểu hoán vị. Trong hàm `newSolution()`, biến `Permutation` được sử dụng để biểu diễn thứ tự ưu tiên của các nhân viên (employees) đối với các công ty (companies) và bộ phận (departments). 
+   - **Biến `Permutation(NUM_PERSONS)`** tạo ra một dãy hoán vị ngẫu nhiên của 5 nhân viên. Mỗi phần tử trong dãy hoán vị này tương ứng với chỉ số của một nhân viên và thứ tự của chỉ số này thể hiện thứ tự ưu tiên của nhân viên đó khi ghép cặp với các công ty và bộ phận.
+
+### 2. **Dữ liệu chuỗi ký tự (String-based Representation)**
+   - Bạn sử dụng các mảng chuỗi để biểu diễn danh sách nhân viên, công ty và bộ phận:
+     - **Mảng `employees[]`** chứa tên của 5 nhân viên: "Alice", "Bob", "Charlie", "David", "Eva".
+     - **Mảng `preferencesB[][]`** và **`preferencesC[][]`** chứa thứ tự ưu tiên của nhân viên với các công ty và bộ phận tương ứng. Mỗi hàng đại diện cho một nhân viên, và mỗi cột chứa tên của công ty hoặc bộ phận theo thứ tự ưu tiên.
+   
+### 3. **Fitness Function**
+   - Hàm **evaluate()** đánh giá giải pháp bằng cách tính số lượng cặp ghép ổn định giữa nhân viên, công ty và bộ phận.
+   - Biểu thức **`solution.setObjective(0, -stableMatches)`** dùng để thiết lập giá trị mục tiêu, trong đó số lượng cặp ghép ổn định (stable matches) được tối đa hóa.
+
+### 4. **Biểu diễn đối tượng `Solution`**
+   - Mỗi giải pháp được biểu diễn dưới dạng đối tượng `Solution` với một biến quyết định (decision variable) duy nhất là một hoán vị của nhân viên, công ty và bộ phận. 
+   - **Mỗi giải pháp** bao gồm một biến quyết định (dưới dạng một hoán vị) và một mục tiêu duy nhất (số lượng cặp ổn định).
+
+### Tổng kết:
+Trong bài toán, cách biểu diễn dữ liệu sử dụng hai cách chính: 
+- **Hoán vị** cho thứ tự ưu tiên của nhân viên đối với các công ty và bộ phận.
+- **Chuỗi ký tự** để lưu tên nhân viên, công ty và bộ phận.
