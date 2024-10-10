@@ -1,4 +1,4 @@
-package org.example.unfinishedTest;
+package org.example.triplet_stable_matching;
 
 import java.util.ArrayList;
 import java.util.Arrays;
